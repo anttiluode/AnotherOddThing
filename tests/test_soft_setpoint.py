@@ -30,18 +30,18 @@ def test_soft_misalignment_has_robust_region_then_breaks_alignment():
     assert np.mean(high) < 0.10
 
 
-def test_continuous_plasticity_update_interpolates_same_anchor_points():
+def test_continuous_plasticity_update_preserves_no_update_floor_and_interpolates_between_thresholds():
     cfg = AlignmentConfig()
     td = cfg.trace.theta_d
     tp = cfg.trace.theta_p
     midpoint = 0.5 * (td + tp)
 
     updates = continuous_plasticity_update(
-        np.array([0.0, td, midpoint, tp, 1.5 * tp]),
+        np.array([0.0, 0.5 * td, td, midpoint, tp, 1.5 * tp]),
         config=cfg.trace,
     )
 
-    assert np.allclose(updates, [0.0, -1.0, 0.0, 1.0, 1.0])
+    assert np.allclose(updates, [0.0, 0.0, -1.0, 0.0, 1.0, 1.0])
     interior = continuous_plasticity_update(
         np.linspace(td, tp, 9),
         config=cfg.trace,
