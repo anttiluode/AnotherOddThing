@@ -3,7 +3,13 @@ from __future__ import annotations
 import numpy as np
 
 from .alignment import AlignmentConfig, alignment_metrics, heterosynaptic_normalize
-from .trace import CompartmentTrace, TraceConfig, plasticity_sign
+from .trace import (
+    CompartmentTrace,
+    SingleCompartmentTrace,
+    TraceConfig,
+    matched_single_tau_s,
+    plasticity_sign,
+)
 
 
 def soft_inhibition(
@@ -80,15 +86,26 @@ def train_soft_misalignment(
     seed: int,
     mismatch: float,
     plasticity_rule: str = "quantized",
+    plasticity_trace_mode: str = "two_timescale",
     config: AlignmentConfig | None = None,
 ) -> dict[str, object]:
-    """Train with correct expression but continuously displaced plasticity relief."""
+    """Train with correct expression but continuously displaced plasticity relief.
+
+    ``plasticity_trace_mode`` changes only the trace that controls learning.
+    Expression always keeps the original two-timescale trace, so the v4
+    attacker isolates whether the two-state plasticity history is required for
+    the v3 set-point effect.
+    """
 
     cfg = config or AlignmentConfig()
     if not 0.0 <= mismatch <= 1.0:
         raise ValueError("mismatch must be between 0 and 1")
     if plasticity_rule not in {"quantized", "continuous"}:
         raise ValueError("plasticity_rule must be 'quantized' or 'continuous'")
+    if plasticity_trace_mode not in {"two_timescale", "single_matched"}:
+        raise ValueError(
+            "plasticity_trace_mode must be 'two_timescale' or 'single_matched'"
+        )
 
     n = cfg.n_compartments
     rng_weights = np.random.default_rng(seed)
@@ -104,7 +121,19 @@ def train_soft_misalignment(
     )
 
     expression_trace = CompartmentTrace.zeros(n, config=cfg.trace)
-    plasticity_trace = CompartmentTrace.zeros(n, config=cfg.trace)
+    matched_tau: float | None = None
+    if plasticity_trace_mode == "two_timescale":
+        plasticity_trace = CompartmentTrace.zeros(n, config=cfg.trace)
+    else:
+        matched_tau = matched_single_tau_s(
+            config=cfg.trace,
+            active_steps=cfg.active_steps,
+        )
+        plasticity_trace = SingleCompartmentTrace.zeros(
+            n,
+            tau_s=matched_tau,
+            config=cfg.trace,
+        )
 
     schedule = np.tile(np.arange(n, dtype=int), cfg.presentations_per_context)
     rng_schedule.shuffle(schedule)
@@ -173,6 +202,8 @@ def train_soft_misalignment(
         "seed": int(seed),
         "mismatch": float(mismatch),
         "plasticity_rule": plasticity_rule,
+        "plasticity_trace_mode": plasticity_trace_mode,
+        "matched_single_tau_s": matched_tau,
         "alignment_accuracy": metrics["alignment_accuracy"],
         "diagonal_weight_share": metrics["diagonal_weight_share"],
         "publication_target_fraction": float(publication_target_hits / len(schedule)),
