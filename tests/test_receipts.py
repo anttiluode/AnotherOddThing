@@ -60,6 +60,8 @@ def test_canonical_receipts_match_frozen_files():
     frozen_v0 = json.loads((root / "results" / "v0.json").read_text())
     frozen_v1 = json.loads((root / "results" / "v1.json").read_text())
     frozen_v2 = json.loads((root / "results" / "v2.json").read_text())
+    frozen_v3 = json.loads((root / "results" / "v3.json").read_text())
     assert build_v0_receipt() == frozen_v0
     assert build_v1_receipt() == frozen_v1
     assert build_v2_receipt() == frozen_v2
+    assert build_v3_receipt() == frozen_v3
