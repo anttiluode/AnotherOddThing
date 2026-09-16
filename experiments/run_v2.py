@@ -124,7 +124,7 @@ def build_receipt(
         and float(q0["decoupled_routed"]["alignment_accuracy_mean"])
         == float(q0["coupled"]["alignment_accuracy_mean"])
         and float(q1["decoupled_routed"]["alignment_accuracy_mean"]) <= 0.25
-        and all(a >= b for a, b in zip(routed_alignment, routed_alignment[1:], strict=True))
+        and all(a >= b for a, b in zip(routed_alignment, routed_alignment[1:]))
         and midpoint_ci[0] > 0.0
         and float(np.mean(normalization_after[1:, 0] - 1.0)) < 0.0
     )
