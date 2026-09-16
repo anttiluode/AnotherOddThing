@@ -17,8 +17,8 @@
 <main>
   <span class="pill">AnotherOddThing / v3</span>
   <h1>Slide the inhibition. Watch the learning regime move.</h1>
-  <p class="lede">v3 removes the binary routing attack. Plasticity relief moves continuously from the expression-aligned compartment to a wrong one. The question is whether a categorical local plasticity readout creates a sharper structural transition than a continuous-magnitude attacker using the same anchor points.</p>
-  <div class="equation">continuous inhibitory displacement q → local trace → { quantized 0/LTD/LTP OR continuous update } → branch-normalized weights</div>
+  <p class="lede">v3 removes the binary routing attack. Plasticity relief moves continuously from the expression-aligned compartment to a wrong one. The stricter attacker keeps the same zero-update floor below θd and only smooths update magnitude between θd and θp.</p>
+  <div class="equation">continuous inhibitory displacement q → local trace → { quantized 0/LTD/LTP OR continuous LTD↔LTP magnitude } → branch-normalized weights</div>
 
   <section class="grid">
     <article class="card wide">
@@ -51,9 +51,9 @@
 
     <article class="card">
       <h2>Midpoint receipt</h2>
-      <p>At <code>q=0.5</code>, continuous-minus-quantized alignment is <strong class="good">+0.4453125</strong>.</p>
-      <p>Paired-bootstrap 95% interval: <strong>[+0.3984375,+0.4921875]</strong>.</p>
-      <p>Weight-share delta: <strong class="good">+0.16925697</strong>, 95% interval <strong>[+0.16056011,+0.17774522]</strong>.</p>
+      <p>At <code>q=0.5</code>, continuous-minus-quantized alignment is <strong class="good">+0.437500</strong>.</p>
+      <p>Paired-bootstrap 95% interval: <strong>[+0.386719,+0.488281]</strong>.</p>
+      <p>Weight-share delta: <strong class="good">+0.14281462</strong>, 95% interval <strong>[+0.13406188,+0.15120240]</strong>.</p>
     </article>
 
     <article class="card wide">
@@ -63,9 +63,9 @@
 
     <article class="card wide">
       <h2>Claim fence</h2>
-      <p class="good"><strong>The continuous attacker does not erase the difference.</strong></p>
+      <p class="good"><strong>The stricter continuous attacker does not erase the difference.</strong></p>
       <p>In this fixed toy world, categorical local plasticity makes the learned structure lose alignment earlier and more sharply under the same continuously moved inhibitory set-point.</p>
-      <p class="muted">This is not evidence for a biological critical point, not a claim that real calcium follows this toy rule, and not a universal argument for quantized plasticity. The continuous rule is an adversarial control, not a biological model.</p>
+      <p class="muted">The control gets no extra subthreshold LTD: both rules are exactly zero below θd. This is still not evidence for a biological critical point, not a claim that real calcium follows this toy rule, and not a universal argument for quantized plasticity.</p>
     </article>
   </section>
   <footer>Machine-readable source of truth: <code>results/v3.json</code>. Reproduce with <code>python -m experiments.run_v3 --out /tmp/v3.json</code>.</footer>
@@ -73,9 +73,9 @@
 <script>
 const qGrid=[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0];
 const quantAcc=[1,1,1,0.947265625,0.6484375,0.228515625,0.064453125,0.013671875,0.001953125,0,0];
-const contAcc=[1,1,1,1,0.91015625,0.673828125,0.478515625,0.283203125,0.203125,0.1328125,0.041015625];
+const contAcc=[1,1,1,1,0.98046875,0.666015625,0.39453125,0.22265625,0.169921875,0.046875,0.001953125];
 const quantShare=[0.5487953912494336,0.5562280453394253,0.5525881655209783,0.5076146096622012,0.374224319555016,0.2560436000033578,0.1754539489041468,0.14037324228964163,0.13453065568760106,0.141450124761144,0.15113909029311728];
-const contShare=[0.5165368611643272,0.5250821026424812,0.5305341028896184,0.5070870231584206,0.4608343640371635,0.4253005652810441,0.37719376584395886,0.2976590566979497,0.23251400147654563,0.19540273525808735,0.16774850822837162];
+const contShare=[0.4563679808517198,0.4636469267551354,0.47107192464143977,0.4717978809256287,0.4401731566008362,0.3988582194293569,0.32678514073947806,0.24478373649946833,0.21332727364260218,0.190784262031192,0.18419943690819385];
 function pct(v){return (100*v).toFixed(1)+'%'}
 function render(){const i=Number(document.querySelector('#q').value);qText.textContent='q = '+qGrid[i].toFixed(2);qa.textContent=quantAcc[i].toFixed(3);ca.textContent=contAcc[i].toFixed(3);qw.textContent=quantShare[i].toFixed(3);cw.textContent=contShare[i].toFixed(3);qaBar.style.width=pct(quantAcc[i]);caBar.style.width=pct(contAcc[i]);qwBar.style.width=pct(quantShare[i]);cwBar.style.width=pct(contShare[i]);const d=contAcc[i]-quantAcc[i];readout.textContent=d>0.001?`continuous control retains +${d.toFixed(3)} alignment`:'rules are effectively tied here';readout.className='big '+(d>0.001?'good':'muted')}
 const tbody=document.querySelector('#sweep tbody');qGrid.forEach((q,i)=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${q.toFixed(1)}</td><td>${quantAcc[i].toFixed(3)}</td><td>${contAcc[i].toFixed(3)}</td><td>${quantShare[i].toFixed(3)}</td><td>${contShare[i].toFixed(3)}</td>`;tbody.appendChild(tr)});document.querySelector('#q').addEventListener('input',render);render();
