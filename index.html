@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AnotherOddThing — resident operator lab</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0b1020; --panel:#111a31; --ink:#eef3ff; --muted:#9fb0d0; --line:#2a3a64; --hot:#ffc857; --cold:#6dd5ed; --good:#72e6a6; }
+    * { box-sizing:border-box; }
+    body { margin:0; font:16px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:radial-gradient(circle at 20% 0%,#162449 0,#0b1020 42rem); color:var(--ink); }
+    main { width:min(1120px,94vw); margin:auto; padding:48px 0 72px; }
+    h1 { font-size:clamp(2rem,6vw,5.4rem); line-height:.92; letter-spacing:-.06em; margin:.1em 0 .2em; }
+    h2 { margin-top:0; font-size:1.35rem; }
+    .lede { max-width:850px; color:var(--muted); font-size:1.08rem; }
+    .equation { margin:28px 0; padding:18px 20px; border-left:3px solid var(--cold); background:#0a1328bb; overflow:auto; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:18px; margin-top:24px; }
+    .card { background:linear-gradient(180deg,#131d37,#0d1529); border:1px solid var(--line); border-radius:18px; padding:20px; box-shadow:0 20px 50px #0006; }
+    label { display:grid; grid-template-columns:1fr auto; gap:10px; margin:12px 0 4px; color:var(--muted); }
+    input, select, button { font:inherit; }
+    input[type=range] { width:100%; }
+    select, button { background:#172342; color:var(--ink); border:1px solid #38518b; border-radius:9px; padding:8px 10px; }
+    button { cursor:pointer; }
+    button:hover { border-color:var(--cold); }
+    canvas { width:100%; height:260px; border:1px solid var(--line); background:#080d1a; border-radius:12px; margin-top:12px; }
+    table { width:100%; border-collapse:collapse; margin-top:12px; }
+    td,th { padding:8px; border-bottom:1px solid #24345c; text-align:right; }
+    td:first-child,th:first-child { text-align:left; }
+    .big { font-size:2rem; font-weight:800; }
+    .good { color:var(--good); }
+    .hot { color:var(--hot); }
+    .cold { color:var(--cold); }
+    .muted { color:var(--muted); }
+    .pill { display:inline-block; padding:4px 9px; border:1px solid var(--line); border-radius:999px; margin:2px; color:var(--muted); }
+    .bar { height:12px; background:#0b1325; border-radius:99px; overflow:hidden; margin:4px 0 12px; }
+    .bar > span { display:block; height:100%; background:linear-gradient(90deg,var(--cold),var(--hot)); }
+    footer { color:var(--muted); margin-top:36px; }
+    code { color:#d6e2ff; }
+  </style>
+</head>
+<body>
+<main>
+  <div class="pill">AnotherOddThing / v0+v1</div>
+  <h1>The pulse is not the computation.</h1>
+  <p class="lede">Two destinations can look identical while idle and still do different things to the same tiny event. This lab shows the exact synthetic witness in the Python repo, then shows why choosing <em>where</em> to poke can be informative even when the reply is only one bit.</p>
+  <div class="equation">resident operator A + state x + addressed perturbation b<sub>k</sub>u → operator-dependent response → optional one-bit publication</div>
+
+  <section class="grid">
+    <article class="card">
+      <h2>Gate v0 · passive equality</h2>
+      <p class="muted">O0 and O1 share their visible dynamics. O1 alone couples hidden coordinate 1 into the visible coordinate.</p>
+      <label>Passive steps <strong id="stepsValue">4</strong></label>
+      <input id="steps" type="range" min="0" max="8" value="4" />
+      <label>Probe site
+        <select id="site">
+          <option value="none">none</option>
+          <option value="0">visible coordinate 0</option>
+          <option value="1" selected>hidden coordinate 1</option>
+        </select>
+      </label>
+      <label>Probe amplitude <strong id="ampValue">1.00</strong></label>
+      <input id="amp" type="range" min="0" max="1.5" value="1" step="0.05" />
+      <label>Publication threshold <strong id="thresholdValue">0.75</strong></label>
+      <input id="threshold" type="range" min="0.2" max="1.5" value="0.75" step="0.01" />
+      <canvas id="trace" width="720" height="360"></canvas>
+      <table>
+        <thead><tr><th>response</th><th>O0</th><th>O1</th></tr></thead>
+        <tbody>
+          <tr><td>visible y</td><td id="y0"></td><td id="y1"></td></tr>
+          <tr><td>event bit</td><td id="e0"></td><td id="e1"></td></tr>
+        </tbody>
+      </table>
+      <p id="verdict" class="big"></p>
+    </article>
+
+    <article class="card">
+      <h2>Gate v1 · choose the address</h2>
+      <p class="muted">Four possible resident operators answer three probe sites differently. The observer only receives a noisy thresholded bit.</p>
+      <table>
+        <thead><tr><th>operator</th><th>site 0</th><th>site 1</th><th>site 2</th></tr></thead>
+        <tbody>
+          <tr><td>O0</td><td>low</td><td>low</td><td>low</td></tr>
+          <tr><td>O1</td><td class="hot">high</td><td>low</td><td>low</td></tr>
+          <tr><td>O2</td><td>low</td><td class="hot">high</td><td>low</td></tr>
+          <tr><td>O3</td><td>low</td><td class="hot">high</td><td class="hot">high</td></tr>
+        </tbody>
+      </table>
+      <p>Expected information gain from a uniform prior:</p>
+      <div id="igBars"></div>
+      <p>Best first poke: <strong id="bestSite" class="cold"></strong></p>
+      <button id="trial">Run a noisy two-poke example</button>
+      <p id="trialText" class="muted"></p>
+    </article>
+
+    <article class="card">
+      <h2>Frozen Python receipt</h2>
+      <p class="muted">The browser is explanatory. These numbers come from the deterministic 4,096-trial Python experiment committed in <code>results/v1.json</code>.</p>
+      <div class="big good">91.53%</div><p>active identification accuracy</p>
+      <div class="big">69.53%</div><p>random distinct-site accuracy</p>
+      <div class="big hot">+21.997 pp</div><p>paired accuracy delta</p>
+      <p>paired-bootstrap 95% interval: <strong>[+20.556, +23.438] pp</strong></p>
+      <p>Both policies get exactly two probes. Active chooses site 1 first, then chooses site 0 or 2 from the first reply.</p>
+    </article>
+
+    <article class="card">
+      <h2>Claim fence</h2>
+      <p>This page does <strong>not</strong> say that a real dendritic branch is an arbitrary software program.</p>
+      <p>The narrower result is:</p>
+      <div class="equation">passive equality ≠ operator equality<br/>if the passive trajectory never excites the direction on which the operators differ.</div>
+      <p>Yang et al. (2016) and Onasch et al. (2026) are biological motivation for branch-local nonlinear processing and contextual gating. The probe-identification mechanism is ours to test, not something those papers establish.</p>
+    </article>
+  </section>
+  <footer>Built to be killed by controls. Next: state-vs-operator ambiguity, route destruction, probe cost, and back-action.</footer>
+</main>
+<script>
+const A0 = [[0.85,0.00],[0.00,0.55]];
+const A1 = [[0.85,0.65],[0.00,0.55]];
+const gains = [[0.2,0.2,0.2],[1.4,0.2,0.2],[0.2,1.4,0.2],[0.2,1.4,1.4]];
+const sigma = 0.35, gateThreshold = 0.8;
+
+function mv(A,x){ return [A[0][0]*x[0]+A[0][1]*x[1], A[1][0]*x[0]+A[1][1]*x[1]]; }
+function run(A, steps, site, amp){
+  let x=[1,0], ys=[x[0]];
+  for(let i=0;i<steps;i++){ x=mv(A,x); ys.push(x[0]); }
+  if(site !== 'none'){
+    x=x.slice(); x[Number(site)]+=amp; x=mv(A,x); ys.push(x[0]);
+  }
+  return ys;
+}
+function draw(){
+  const steps=Number(document.querySelector('#steps').value);
+  const site=document.querySelector('#site').value;
+  const amp=Number(document.querySelector('#amp').value);
+  const threshold=Number(document.querySelector('#threshold').value);
+  document.querySelector('#stepsValue').textContent=steps;
+  document.querySelector('#ampValue').textContent=amp.toFixed(2);
+  document.querySelector('#thresholdValue').textContent=threshold.toFixed(2);
+  const t0=run(A0,steps,site,amp), t1=run(A1,steps,site,amp);
+  const y0=t0.at(-1), y1=t1.at(-1), e0=Number(y0>threshold), e1=Number(y1>threshold);
+  document.querySelector('#y0').textContent=y0.toFixed(6);
+  document.querySelector('#y1').textContent=y1.toFixed(6);
+  document.querySelector('#e0').textContent=e0;
+  document.querySelector('#e1').textContent=e1;
+  const verdict=document.querySelector('#verdict');
+  if(Math.abs(y1-y0)<1e-12){ verdict.textContent='operators remain hidden'; verdict.className='big muted'; }
+  else if(e0!==e1){ verdict.textContent='one bit reveals the operator'; verdict.className='big good'; }
+  else { verdict.textContent='analog response differs, bit does not'; verdict.className='big hot'; }
+
+  const c=document.querySelector('#trace'), ctx=c.getContext('2d');
+  ctx.clearRect(0,0,c.width,c.height); ctx.strokeStyle='#24345c'; ctx.lineWidth=1;
+  for(let i=0;i<5;i++){ const y=30+i*(c.height-60)/4; ctx.beginPath(); ctx.moveTo(40,y); ctx.lineTo(c.width-20,y); ctx.stroke(); }
+  const max=Math.max(1.5,...t0,...t1), n=Math.max(t0.length,t1.length);
+  function plot(arr,color){ ctx.strokeStyle=color; ctx.lineWidth=4; ctx.beginPath(); arr.forEach((v,i)=>{ const x=40+i*(c.width-70)/Math.max(1,n-1); const y=c.height-30-v/max*(c.height-60); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }); ctx.stroke(); }
+  plot(t0,'#6dd5ed'); plot(t1,'#ffc857');
+  ctx.fillStyle='#eef3ff'; ctx.font='18px ui-monospace'; ctx.fillText('O0',48,30); ctx.fillStyle='#6dd5ed'; ctx.fillRect(85,17,28,4); ctx.fillStyle='#eef3ff'; ctx.fillText('O1',130,30); ctx.fillStyle='#ffc857'; ctx.fillRect(167,17,28,4);
+}
+
+function erf(x){
+  const sign=x<0?-1:1; x=Math.abs(x); const a1=.254829592,a2=-.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=.3275911;
+  const t=1/(1+p*x); const y=1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x); return sign*y;
+}
+function pOn(mean){ return .5*(1+erf((mean-gateThreshold)/(sigma*Math.sqrt(2)))); }
+function entropy(p){ return -p.filter(x=>x>0).reduce((s,x)=>s+x*Math.log2(x),0); }
+function update(prior,site,event){
+  const q=prior.map((p,i)=>p*(event?pOn(gains[i][site]):1-pOn(gains[i][site]))); const z=q.reduce((a,b)=>a+b,0); return q.map(x=>x/z);
+}
+function infoGain(prior,site){
+  const pon=prior.reduce((s,p,i)=>s+p*pOn(gains[i][site]),0); let e=0;
+  if(pon>0)e+=pon*entropy(update(prior,site,1)); if(pon<1)e+=(1-pon)*entropy(update(prior,site,0)); return entropy(prior)-e;
+}
+function bestSite(prior,available){ return available.map(s=>[infoGain(prior,s),s]).sort((a,b)=>b[0]-a[0]||a[1]-b[1])[0][1]; }
+function renderIG(){
+  const prior=[.25,.25,.25,.25]; const vals=[0,1,2].map(s=>infoGain(prior,s)); const max=Math.max(...vals);
+  document.querySelector('#igBars').innerHTML=vals.map((v,s)=>`<div>site ${s}: ${v.toFixed(3)} bits<div class="bar"><span style="width:${100*v/max}%"></span></div></div>`).join('');
+  document.querySelector('#bestSite').textContent=`site ${bestSite(prior,[0,1,2])}`;
+}
+function noisyEvent(op,site){ const u1=Math.max(1e-12,Math.random()),u2=Math.random(); const z=Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2); return Number(gains[op][site]+sigma*z>gateThreshold); }
+function runTrial(){
+  const truth=Math.floor(Math.random()*4); let prior=[.25,.25,.25,.25], available=[0,1,2], history=[];
+  for(let r=0;r<2;r++){ const site=bestSite(prior,available); const event=noisyEvent(truth,site); prior=update(prior,site,event); available=available.filter(s=>s!==site); history.push(`site ${site} → bit ${event}`); }
+  const guess=prior.indexOf(Math.max(...prior)); document.querySelector('#trialText').textContent=`truth O${truth}; ${history.join(', ')}; posterior [${prior.map(x=>x.toFixed(2)).join(', ')}]; guess O${guess}`;
+}
+
+document.querySelectorAll('#steps,#site,#amp,#threshold').forEach(el=>el.addEventListener('input',draw));
+document.querySelector('#trial').addEventListener('click',runTrial);
+draw(); renderIG();
+</script>
+</body>
+</html>
