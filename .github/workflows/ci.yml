@@ -1,0 +1,38 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -e ".[test]"
+      - run: pytest -q
+      - name: Reproduce frozen receipts
+        run: |
+          python -m experiments.run_v0 --out /tmp/v0.json
+          python -m experiments.run_v1 --out /tmp/v1.json
+          cmp /tmp/v0.json results/v0.json
+          cmp /tmp/v1.json results/v1.json
+      - name: Check browser lab JavaScript syntax
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path("index.html").read_text()
+          script = text.split("<script>", 1)[1].split("</script>", 1)[0]
+          Path("/tmp/another-odd-thing.js").write_text(script)
+          PY
+          node --check /tmp/another-odd-thing.js
