@@ -45,22 +45,196 @@
     0.1512024001525011
   ],
   "seeds": 128,
-  "setpoint_mismatches": [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0],
+  "setpoint_mismatches": [
+    0.0,
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9,
+    1.0
+  ],
   "shape_summary": {
-    "continuous_steepest_adjacent_weight_share_drop": {"drop": 0.08200140424000973, "from_mismatch": 0.6, "to_mismatch": 0.7},
-    "quantized_steepest_adjacent_weight_share_drop": {"drop": 0.13339029010718517, "from_mismatch": 0.3, "to_mismatch": 0.4}
+    "continuous_steepest_adjacent_weight_share_drop": {
+      "drop": 0.08200140424000973,
+      "from_mismatch": 0.6,
+      "to_mismatch": 0.7
+    },
+    "quantized_steepest_adjacent_weight_share_drop": {
+      "drop": 0.13339029010718517,
+      "from_mismatch": 0.3,
+      "to_mismatch": 0.4
+    }
   },
   "sweep": [
-    {"continuous":{"alignment_accuracy_mean":1.0,"diagonal_weight_share_mean":0.4563679808517198,"publication_target_fraction_mean":1.0,"weight_budget_max_abs_error_max":1.3322676295501878e-15},"mismatch":0.0,"quantized":{"alignment_accuracy_mean":1.0,"diagonal_weight_share_mean":0.5487953912494336,"publication_target_fraction_mean":1.0,"weight_budget_max_abs_error_max":8.881784197001252e-16}},
-    {"continuous":{"alignment_accuracy_mean":1.0,"diagonal_weight_share_mean":0.4636469267551354,"publication_target_fraction_mean":1.0,"weight_budget_max_abs_error_max":8.881784197001252e-16},"mismatch":0.1,"quantized":{"alignment_accuracy_mean":1.0,"diagonal_weight_share_mean":0.5562280453394253,"publication_target_fraction_mean":1.0,"weight_budget_max_abs_error_max":1.3322676295501878e-15}},
-    {"continuous":{"alignment_accuracy_mean":1.0,"diagonal_weight_share_mean":0.47107192464143977,"publication_target_fraction_mean":1.0,"weight_budget_max_abs_error_max":1.3322676295501878e-15},"mismatch":0.2,"quantized":{"alignment_accuracy_mean":1.0,"diagonal_weight_share_mean":0.5525881655209783,"publication_target_fraction_mean":1.0,"weight_budget_max_abs_error_max":8.881784197001252e-16}},
-    {"continuous":{"alignment_accuracy_mean":1.0,"diagonal_weight_share_mean":0.4717978809256287,"publication_target_fraction_mean":1.0,"weight_budget_max_abs_error_max":1.3322676295501878e-15},"mismatch":0.3,"quantized":{"alignment_accuracy_mean":0.947265625,"diagonal_weight_share_mean":0.5076146096622012,"publication_target_fraction_mean":0.9885416666666667,"weight_budget_max_abs_error_max":1.3322676295501878e-15}},
-    {"continuous":{"alignment_accuracy_mean":0.98046875,"diagonal_weight_share_mean":0.4401731566008362,"publication_target_fraction_mean":0.9984375000000001,"weight_budget_max_abs_error_max":1.3322676295501878e-15},"mismatch":0.4,"quantized":{"alignment_accuracy_mean":0.6484375,"diagonal_weight_share_mean":0.374224319555016,"publication_target_fraction_mean":0.9419270833333333,"weight_budget_max_abs_error_max":1.3322676295501878e-15}},
-    {"continuous":{"alignment_accuracy_mean":0.666015625,"diagonal_weight_share_mean":0.3988582194293569,"publication_target_fraction_mean":0.9716796875,"weight_budget_max_abs_error_max":1.3322676295501878e-15},"mismatch":0.5,"quantized":{"alignment_accuracy_mean":0.228515625,"diagonal_weight_share_mean":0.2560436000033578,"publication_target_fraction_mean":0.8548828125,"weight_budget_max_abs_error_max":1.3322676295501878e-15}},
-    {"continuous":{"alignment_accuracy_mean":0.39453125,"diagonal_weight_share_mean":0.32678514073947806,"publication_target_fraction_mean":0.8860677083333333,"weight_budget_max_abs_error_max":1.3322676295501878e-15},"mismatch":0.6,"quantized":{"alignment_accuracy_mean":0.064453125,"diagonal_weight_share_mean":0.1754539489041468,"publication_target_fraction_mean":0.6453125,"weight_budget_max_abs_error_max":1.3322676295501878e-15}},
-    {"continuous":{"alignment_accuracy_mean":0.22265625,"diagonal_weight_share_mean":0.24478373649946833,"publication_target_fraction_mean":0.7408854166666667,"weight_budget_max_abs_error_max":8.881784197001252e-16},"mismatch":0.7,"quantized":{"alignment_accuracy_mean":0.013671875,"diagonal_weight_share_mean":0.14037324228964163,"publication_target_fraction_mean":0.529296875,"weight_budget_max_abs_error_max":1.3322676295501878e-15}},
-    {"continuous":{"alignment_accuracy_mean":0.169921875,"diagonal_weight_share_mean":0.21332727364260218,"publication_target_fraction_mean":0.6636067708333333,"weight_budget_max_abs_error_max":8.881784197001252e-16},"mismatch":0.8,"quantized":{"alignment_accuracy_mean":0.001953125,"diagonal_weight_share_mean":0.13453065568760106,"publication_target_fraction_mean":0.4825520833333333,"weight_budget_max_abs_error_max":1.3322676295501878e-15}},
-    {"continuous":{"alignment_accuracy_mean":0.046875,"diagonal_weight_share_mean":0.190784262031192,"publication_target_fraction_mean":0.6479817708333333,"weight_budget_max_abs_error_max":8.881784197001252e-16},"mismatch":0.9,"quantized":{"alignment_accuracy_mean":0.0,"diagonal_weight_share_mean":0.141450124761144,"publication_target_fraction_mean":0.48118489583333335,"weight_budget_max_abs_error_max":1.3322676295501878e-15}},
-    {"continuous":{"alignment_accuracy_mean":0.001953125,"diagonal_weight_share_mean":0.18419943690819385,"publication_target_fraction_mean":0.665625,"weight_budget_max_abs_error_max":8.881784197001252e-16},"mismatch":1.0,"quantized":{"alignment_accuracy_mean":0.0,"diagonal_weight_share_mean":0.15113909029311728,"publication_target_fraction_mean":0.5056640625,"weight_budget_max_abs_error_max":8.881784197001252e-16}}
+    {
+      "continuous": {
+        "alignment_accuracy_mean": 1.0,
+        "diagonal_weight_share_mean": 0.4563679808517198,
+        "publication_target_fraction_mean": 1.0,
+        "weight_budget_max_abs_error_max": 1.3322676295501878e-15
+      },
+      "mismatch": 0.0,
+      "quantized": {
+        "alignment_accuracy_mean": 1.0,
+        "diagonal_weight_share_mean": 0.5487953912494336,
+        "publication_target_fraction_mean": 1.0,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      }
+    },
+    {
+      "continuous": {
+        "alignment_accuracy_mean": 1.0,
+        "diagonal_weight_share_mean": 0.4636469267551354,
+        "publication_target_fraction_mean": 1.0,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "mismatch": 0.1,
+      "quantized": {
+        "alignment_accuracy_mean": 1.0,
+        "diagonal_weight_share_mean": 0.5562280453394253,
+        "publication_target_fraction_mean": 1.0,
+        "weight_budget_max_abs_error_max": 1.3322676295501878e-15
+      }
+    },
+    {
+      "continuous": {
+        "alignment_accuracy_mean": 1.0,
+        "diagonal_weight_share_mean": 0.47107192464143977,
+        "publication_target_fraction_mean": 1.0,
+        "weight_budget_max_abs_error_max": 1.3322676295501878e-15
+      },
+      "mismatch": 0.2,
+      "quantized": {
+        "alignment_accuracy_mean": 1.0,
+        "diagonal_weight_share_mean": 0.5525881655209783,
+        "publication_target_fraction_mean": 1.0,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      }
+    },
+    {
+      "continuous": {
+        "alignment_accuracy_mean": 1.0,
+        "diagonal_weight_share_mean": 0.4717978809256287,
+        "publication_target_fraction_mean": 1.0,
+        "weight_budget_max_abs_error_max": 1.3322676295501878e-15
+      },
+      "mismatch": 0.3,
+      "quantized": {
+        "alignment_accuracy_mean": 0.947265625,
+        "diagonal_weight_share_mean": 0.5076146096622012,
+        "publication_target_fraction_mean": 0.9885416666666667,
+        "weight_budget_max_abs_error_max": 1.3322676295501878e-15
+      }
+    },
+    {
+      "continuous": {
+        "alignment_accuracy_mean": 0.98046875,
+        "diagonal_weight_share_mean": 0.4401731566008362,
+        "publication_target_fraction_mean": 0.9984375000000001,
+        "weight_budget_max_abs_error_max": 1.3322676295501878e-15
+      },
+      "mismatch": 0.4,
+      "quantized": {
+        "alignment_accuracy_mean": 0.6484375,
+        "diagonal_weight_share_mean": 0.374224319555016,
+        "publication_target_fraction_mean": 0.9419270833333333,
+        "weight_budget_max_abs_error_max": 1.3322676295501878e-15
+      }
+    },
+    {
+      "continuous": {
+        "alignment_accuracy_mean": 0.666015625,
+        "diagonal_weight_share_mean": 0.3988582194293569,
+        "publication_target_fraction_mean": 0.9716796875,
+        "weight_budget_max_abs_error_max": 1.3322676295501878e-15
+      },
+      "mismatch": 0.5,
+      "quantized": {
+        "alignment_accuracy_mean": 0.228515625,
+        "diagonal_weight_share_mean": 0.2560436000033578,
+        "publication_target_fraction_mean": 0.8548828125,
+        "weight_budget_max_abs_error_max": 1.3322676295501878e-15
+      }
+    },
+    {
+      "continuous": {
+        "alignment_accuracy_mean": 0.39453125,
+        "diagonal_weight_share_mean": 0.32678514073947806,
+        "publication_target_fraction_mean": 0.8860677083333333,
+        "weight_budget_max_abs_error_max": 1.3322676295501878e-15
+      },
+      "mismatch": 0.6,
+      "quantized": {
+        "alignment_accuracy_mean": 0.064453125,
+        "diagonal_weight_share_mean": 0.1754539489041468,
+        "publication_target_fraction_mean": 0.6453125,
+        "weight_budget_max_abs_error_max": 1.3322676295501878e-15
+      }
+    },
+    {
+      "continuous": {
+        "alignment_accuracy_mean": 0.22265625,
+        "diagonal_weight_share_mean": 0.24478373649946833,
+        "publication_target_fraction_mean": 0.7408854166666667,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "mismatch": 0.7,
+      "quantized": {
+        "alignment_accuracy_mean": 0.013671875,
+        "diagonal_weight_share_mean": 0.14037324228964163,
+        "publication_target_fraction_mean": 0.529296875,
+        "weight_budget_max_abs_error_max": 1.3322676295501878e-15
+      }
+    },
+    {
+      "continuous": {
+        "alignment_accuracy_mean": 0.169921875,
+        "diagonal_weight_share_mean": 0.21332727364260218,
+        "publication_target_fraction_mean": 0.6636067708333333,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "mismatch": 0.8,
+      "quantized": {
+        "alignment_accuracy_mean": 0.001953125,
+        "diagonal_weight_share_mean": 0.13453065568760106,
+        "publication_target_fraction_mean": 0.4825520833333333,
+        "weight_budget_max_abs_error_max": 1.3322676295501878e-15
+      }
+    },
+    {
+      "continuous": {
+        "alignment_accuracy_mean": 0.046875,
+        "diagonal_weight_share_mean": 0.190784262031192,
+        "publication_target_fraction_mean": 0.6479817708333333,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "mismatch": 0.9,
+      "quantized": {
+        "alignment_accuracy_mean": 0.0,
+        "diagonal_weight_share_mean": 0.141450124761144,
+        "publication_target_fraction_mean": 0.48118489583333335,
+        "weight_budget_max_abs_error_max": 1.3322676295501878e-15
+      }
+    },
+    {
+      "continuous": {
+        "alignment_accuracy_mean": 0.001953125,
+        "diagonal_weight_share_mean": 0.18419943690819385,
+        "publication_target_fraction_mean": 0.665625,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "mismatch": 1.0,
+      "quantized": {
+        "alignment_accuracy_mean": 0.0,
+        "diagonal_weight_share_mean": 0.15113909029311728,
+        "publication_target_fraction_mean": 0.5056640625,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      }
+    }
   ]
 }
