@@ -1,0 +1,178 @@
+{
+  "bootstrap_resamples": 4000,
+  "bootstrap_seed": 9162027,
+  "boundary": "The mirrored independent-trace control matches the coupled machine when it receives the same local signal. The result is about coordination/routing, not evidence that sharing a state variable is intrinsically superior or that this toy reproduces calcium biology.",
+  "claim": "In this toy local-learning system, sharing the compartment signal used by expression and plasticity removes a context-to-compartment coordination requirement. A separately routed plasticity signal matches when aligned and degrades when that routing is corrupted.",
+  "classification": "PASS",
+  "config": {
+    "active_steps": 6,
+    "closed_inhibition": 0.7,
+    "initial_weight": 0.9,
+    "initial_weight_noise": 0.01,
+    "learning_rate": 0.04,
+    "min_weight": 0.05,
+    "n_compartments": 4,
+    "open_inhibition": 0.1,
+    "per_compartment_budget": 3.6,
+    "presentations_per_context": 30,
+    "rest_steps": 6,
+    "trace": {
+      "dt_s": 0.005,
+      "tau_fast_s": 0.015,
+      "tau_slow_s": 0.045,
+      "theta_d": 0.1,
+      "theta_p": 0.32
+    }
+  },
+  "gate": "v2_shared_compartment_trace_alignment",
+  "heterosynaptic_normalization_witness": {
+    "active_weight_after": 1.2727272727272727,
+    "active_weight_before": 1.4,
+    "compartment_budget_after": 4.0,
+    "inactive_weight_after_mean": 0.9090909090909091,
+    "inactive_weight_before": 1.0,
+    "inactive_weight_mean_change": -0.09090909090909094
+  },
+  "midpoint_coupled_minus_routed_alignment_delta_mean": 0.52734375,
+  "midpoint_mismatch_probability": 0.5,
+  "midpoint_paired_alignment_delta_bootstrap_95": [
+    0.484375,
+    0.572265625
+  ],
+  "mismatch_probabilities": [
+    0.0,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+  ],
+  "seeds": 128,
+  "sweep": [
+    {
+      "coupled": {
+        "alignment_accuracy_mean": 1.0,
+        "diagonal_weight_share_mean": 0.5487953912494336,
+        "mapping_mismatch_fraction_mean": 0.0,
+        "publication_target_fraction_mean": 1.0,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "decoupled_mirrored": {
+        "alignment_accuracy_mean": 1.0,
+        "diagonal_weight_share_mean": 0.5487953912494336,
+        "mapping_mismatch_fraction_mean": 0.0,
+        "publication_target_fraction_mean": 1.0,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "decoupled_routed": {
+        "alignment_accuracy_mean": 1.0,
+        "diagonal_weight_share_mean": 0.5487953912494336,
+        "mapping_mismatch_fraction_mean": 0.0,
+        "publication_target_fraction_mean": 1.0,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "mismatch_probability": 0.0
+    },
+    {
+      "coupled": {
+        "alignment_accuracy_mean": 1.0,
+        "diagonal_weight_share_mean": 0.5487953912494336,
+        "mapping_mismatch_fraction_mean": 0.0,
+        "publication_target_fraction_mean": 1.0,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "decoupled_mirrored": {
+        "alignment_accuracy_mean": 1.0,
+        "diagonal_weight_share_mean": 0.5487953912494336,
+        "mapping_mismatch_fraction_mean": 0.0,
+        "publication_target_fraction_mean": 1.0,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "decoupled_routed": {
+        "alignment_accuracy_mean": 0.734375,
+        "diagonal_weight_share_mean": 0.44430524761911994,
+        "mapping_mismatch_fraction_mean": 0.265625,
+        "publication_target_fraction_mean": 0.8996093749999999,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "mismatch_probability": 0.25
+    },
+    {
+      "coupled": {
+        "alignment_accuracy_mean": 1.0,
+        "diagonal_weight_share_mean": 0.5487953912494336,
+        "mapping_mismatch_fraction_mean": 0.0,
+        "publication_target_fraction_mean": 1.0,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "decoupled_mirrored": {
+        "alignment_accuracy_mean": 1.0,
+        "diagonal_weight_share_mean": 0.5487953912494336,
+        "mapping_mismatch_fraction_mean": 0.0,
+        "publication_target_fraction_mean": 1.0,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "decoupled_routed": {
+        "alignment_accuracy_mean": 0.47265625,
+        "diagonal_weight_share_mean": 0.3395513094678995,
+        "mapping_mismatch_fraction_mean": 0.525390625,
+        "publication_target_fraction_mean": 0.7758463541666667,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "mismatch_probability": 0.5
+    },
+    {
+      "coupled": {
+        "alignment_accuracy_mean": 1.0,
+        "diagonal_weight_share_mean": 0.5487953912494336,
+        "mapping_mismatch_fraction_mean": 0.0,
+        "publication_target_fraction_mean": 1.0,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "decoupled_mirrored": {
+        "alignment_accuracy_mean": 1.0,
+        "diagonal_weight_share_mean": 0.5487953912494336,
+        "mapping_mismatch_fraction_mean": 0.0,
+        "publication_target_fraction_mean": 1.0,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "decoupled_routed": {
+        "alignment_accuracy_mean": 0.220703125,
+        "diagonal_weight_share_mean": 0.24013444138812748,
+        "mapping_mismatch_fraction_mean": 0.77734375,
+        "publication_target_fraction_mean": 0.6484375,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "mismatch_probability": 0.75
+    },
+    {
+      "coupled": {
+        "alignment_accuracy_mean": 1.0,
+        "diagonal_weight_share_mean": 0.5487953912494336,
+        "mapping_mismatch_fraction_mean": 0.0,
+        "publication_target_fraction_mean": 1.0,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "decoupled_mirrored": {
+        "alignment_accuracy_mean": 1.0,
+        "diagonal_weight_share_mean": 0.5487953912494336,
+        "mapping_mismatch_fraction_mean": 0.0,
+        "publication_target_fraction_mean": 1.0,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "decoupled_routed": {
+        "alignment_accuracy_mean": 0.0,
+        "diagonal_weight_share_mean": 0.15243787377190898,
+        "mapping_mismatch_fraction_mean": 1.0,
+        "publication_target_fraction_mean": 0.5197265625,
+        "weight_budget_max_abs_error_max": 8.881784197001252e-16
+      },
+      "mismatch_probability": 1.0
+    }
+  ],
+  "trace_witness": {
+    "falling_contrast_after_six_decay_steps": -0.2264940813475083,
+    "rising_contrast_after_pulse": 0.540638252098226,
+    "slow_level_after_pulse": 0.3715702527028714,
+    "slow_level_after_six_decay_steps": 0.30657822991715195
+  }
+}
