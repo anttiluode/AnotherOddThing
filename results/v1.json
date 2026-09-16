@@ -1,0 +1,74 @@
+{
+  "active_accuracy": 0.915283203125,
+  "active_entropy_mean": 0.5175951140887605,
+  "active_first_site_counts": [
+    0,
+    4096,
+    0
+  ],
+  "active_only_correct": 986,
+  "active_probe_count_mean": 2.0,
+  "active_site_paths": {
+    "1->0": 2033,
+    "1->2": 2063
+  },
+  "bootstrap_resamples": 4000,
+  "bootstrap_seed": 9162026,
+  "boundary": "This is a family-specific experiment-design result, not evidence that active probing is universally superior.",
+  "claim": "In this fixed noisy operator family, information-gain probe selection identifies the resident operator more accurately than equal-budget random distinct probes.",
+  "classification": "PASS",
+  "config": {
+    "high_gain": 1.4,
+    "low_gain": 0.2,
+    "operator_gain_table": [
+      [
+        0.2,
+        0.2,
+        0.2
+      ],
+      [
+        1.4,
+        0.2,
+        0.2
+      ],
+      [
+        0.2,
+        1.4,
+        0.2
+      ],
+      [
+        0.2,
+        1.4,
+        1.4
+      ]
+    ],
+    "probe_budget": 2,
+    "sigma": 0.35,
+    "threshold": 0.8
+  },
+  "gate": "v1_active_one_bit_operator_identification",
+  "paired_accuracy_delta": 0.219970703125,
+  "paired_accuracy_delta_bootstrap_95": [
+    0.20556030273437503,
+    0.234375
+  ],
+  "random_accuracy": 0.6953125,
+  "random_entropy_mean": 0.8554080864917404,
+  "random_first_site_counts": [
+    1377,
+    1381,
+    1338
+  ],
+  "random_only_correct": 85,
+  "random_probe_count_mean": 2.0,
+  "random_site_paths": {
+    "0->1": 690,
+    "0->2": 687,
+    "1->0": 681,
+    "1->2": 700,
+    "2->0": 698,
+    "2->1": 640
+  },
+  "seed": 20260916,
+  "trials": 4096
+}
