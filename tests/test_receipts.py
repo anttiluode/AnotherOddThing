@@ -1,6 +1,7 @@
 from experiments.run_v0 import build_receipt as build_v0_receipt
 from experiments.run_v1 import build_receipt as build_v1_receipt
 from experiments.run_v2 import build_receipt as build_v2_receipt
+from experiments.run_v3 import build_receipt as build_v3_receipt
 
 
 def test_v0_receipt_contains_destructive_controls():
@@ -31,6 +32,24 @@ def test_v2_receipt_preserves_oracle_attacker_and_breaks_under_mismatch():
     assert q0["coupled"]["alignment_accuracy_mean"] == q0["decoupled_mirrored"]["alignment_accuracy_mean"]
     assert q0["coupled"]["alignment_accuracy_mean"] == q0["decoupled_routed"]["alignment_accuracy_mean"]
     assert q1["coupled"]["alignment_accuracy_mean"] > q1["decoupled_routed"]["alignment_accuracy_mean"]
+
+
+def test_v3_receipt_separates_quantized_knee_from_continuous_magnitude_control():
+    receipt = build_v3_receipt(seeds=24, bootstrap_resamples=200)
+    assert receipt["classification"] == "PASS"
+
+    q0 = receipt["sweep"][0]
+    qhalf = receipt["sweep"][5]
+    q1 = receipt["sweep"][-1]
+
+    assert q0["quantized"]["alignment_accuracy_mean"] > 0.95
+    assert q0["continuous"]["alignment_accuracy_mean"] > 0.95
+    assert q1["quantized"]["alignment_accuracy_mean"] < 0.10
+    assert q1["continuous"]["alignment_accuracy_mean"] < 0.10
+    assert qhalf["continuous"]["alignment_accuracy_mean"] > qhalf["quantized"]["alignment_accuracy_mean"]
+    assert qhalf["continuous"]["diagonal_weight_share_mean"] > qhalf["quantized"]["diagonal_weight_share_mean"]
+    assert receipt["midpoint_accuracy_delta_bootstrap_95"][0] > 0.0
+    assert receipt["midpoint_weight_share_delta_bootstrap_95"][0] > 0.0
 
 
 def test_canonical_receipts_match_frozen_files():
