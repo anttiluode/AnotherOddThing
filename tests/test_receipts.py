@@ -2,6 +2,7 @@ from experiments.run_v0 import build_receipt as build_v0_receipt
 from experiments.run_v1 import build_receipt as build_v1_receipt
 from experiments.run_v2 import build_receipt as build_v2_receipt
 from experiments.run_v3 import build_receipt as build_v3_receipt
+from experiments.run_v4 import build_receipt as build_v4_receipt
 
 
 def test_v0_receipt_contains_destructive_controls():
@@ -52,6 +53,25 @@ def test_v3_receipt_separates_quantized_knee_from_continuous_magnitude_control()
     assert receipt["midpoint_weight_share_delta_bootstrap_95"][0] > 0.0
 
 
+def test_v4_receipt_asks_whether_two_timescales_are_needed_for_the_knee():
+    receipt = build_v4_receipt(seeds=24, bootstrap_resamples=200)
+    assert receipt["classification"] in {"TWO_TIMESCALE_NEEDED", "SINGLE_TRACE_SUFFICIENT", "MIXED"}
+    assert receipt["plasticity_rule"] == "quantized"
+    assert receipt["matched_single_tau_s"] > receipt["config"]["trace"]["tau_slow_s"]
+    assert abs(receipt["calibration"]["active_readout_level_difference"]) < 1e-12
+    assert abs(receipt["calibration"]["post_rest_level_difference"]) > 1e-4
+
+    q0 = receipt["sweep"][0]
+    qhalf = receipt["sweep"][5]
+    q1 = receipt["sweep"][-1]
+    assert q0["two_timescale"]["alignment_accuracy_mean"] > 0.95
+    assert q0["single_matched"]["alignment_accuracy_mean"] > 0.95
+    assert q1["two_timescale"]["alignment_accuracy_mean"] < 0.10
+    assert q1["single_matched"]["alignment_accuracy_mean"] < 0.10
+    assert "midpoint_single_minus_two_accuracy_delta_mean" in receipt
+    assert "midpoint_single_minus_two_weight_share_delta_mean" in receipt
+
+
 def test_canonical_receipts_match_frozen_files():
     import json
     from pathlib import Path
@@ -61,7 +81,9 @@ def test_canonical_receipts_match_frozen_files():
     frozen_v1 = json.loads((root / "results" / "v1.json").read_text())
     frozen_v2 = json.loads((root / "results" / "v2.json").read_text())
     frozen_v3 = json.loads((root / "results" / "v3.json").read_text())
+    frozen_v4 = json.loads((root / "results" / "v4.json").read_text())
     assert build_v0_receipt() == frozen_v0
     assert build_v1_receipt() == frozen_v1
     assert build_v2_receipt() == frozen_v2
     assert build_v3_receipt() == frozen_v3
+    assert build_v4_receipt() == frozen_v4

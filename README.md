@@ -146,6 +146,47 @@ Two small mechanism witnesses are frozen too:
 
 See [`results/v2.json`](results/v2.json).
 
+## v3 — continuous set-point, categorical learning regime
+
+v3 removes the binary routing corruption. Inhibitory relief moves continuously from the expression-aligned compartment toward a wrong compartment while expression stays correctly aligned. The categorical plasticity rule is compared with a continuous-magnitude attacker that preserves the **same exact no-update floor below `theta_d`** and the same `theta_d`/`theta_p` anchors.
+
+At the frozen midpoint `q = 0.5` across 128 seeds:
+
+| metric | quantized 0/LTD/LTP | continuous magnitude |
+|---|---:|---:|
+| alignment accuracy | **0.228516** | 0.666016 |
+| diagonal weight share | **0.256044** | 0.398858 |
+
+Continuous-minus-quantized alignment delta: **+0.437500**, paired-bootstrap 95% interval **[+0.386719, +0.488281]**.
+
+Continuous-minus-quantized weight-share delta: **+0.142815**, paired-bootstrap 95% interval **[+0.134062, +0.151202]**.
+
+On the frozen 0.1 grid the quantized rule's steepest adjacent weight-share drop occurs at `q=0.3 -> 0.4`; the continuous control's occurs later at `q=0.6 -> 0.7`.
+
+**Classification: PASS for a narrow synthetic mechanism claim.** Under the same continuously displaced local set-point, categorical plasticity loses the learned alignment earlier and more sharply than this matched continuous-magnitude attacker. That is not evidence for biological criticality or a claim that real calcium implements this toy rule.
+
+See [`results/v3.json`](results/v3.json), [`docs/V3_SOFT_SETPOINT.md`](docs/V3_SOFT_SETPOINT.md), and [`v3.html`](v3.html).
+
+## v4 — the two-timescale trace has to earn its second state
+
+v4 attacks a richer interpretation of v2/v3. Only the **plasticity trace** is replaced by one leaky scalar; expression keeps the original two-timescale trace. The scalar time constant is solved analytically so a canonical six-step unit burst reaches exactly the same plasticity decision level as the original 15/45 ms cascade.
+
+```text
+two-timescale level after burst = 0.3715702527028714
+matched single level            = 0.37157025270287153
+matched single tau              = 67.1135 ms
+```
+
+The histories are genuinely different: after six rest steps the single trace is lower by **0.07307243**.
+
+Yet the structural knee survives. Across the frozen 128-seed sweep both traces first fall below 50% alignment at `q=0.5`, and both have their steepest adjacent diagonal-weight-share drop at `q=0.3 -> 0.4`.
+
+At `q=0.5`, matched-single minus two-timescale alignment is **+0.087891**, 95% paired-bootstrap interval **[+0.048828, +0.125000]**. The matched single trace is not merely adequate there; it is modestly better.
+
+**Classification: `SINGLE_TRACE_SUFFICIENT` for this level-only set-point task.** The 15/45 ms cascade is therefore not independently required for the v3 knee. What survives is the local level → categorical regime → branch-wide normalized update mechanism. The `fast - slow` contrast remains a distinct capability, but it now needs a task that actually reads temporal direction before it earns the extra state.
+
+See [`results/v4.json`](results/v4.json) and [`docs/V4_SINGLE_TRACE.md`](docs/V4_SINGLE_TRACE.md).
+
 ## What this changes in the old neuron story
 
 The useful abstraction is no longer just “resident operator + addressed event.” There may be a local transducer/state between the connection and the branch:
@@ -153,20 +194,22 @@ The useful abstraction is no longer just “resident operator + addressed event.
 ```text
 small event + local context
           ↓
-shared compartment state
+compartment-local state
    ↙               ↘
-expression         plasticity
+expression         plasticity regime
    ↓                  ↓
 resident dynamics   future transfer
 ```
 
-That gives a cleaner interpretation of several old intuitions:
+The destructive controls narrow the story further:
 
 - the rich thing can stay resident;
 - the pulse can remain tiny;
 - **where** it lands matters;
 - local state can change what the event means;
-- the same physical state can constrain both what is expressed now and what is allowed to change for later;
+- expression and plasticity need aligned local coordinates, but do not need to share the same Python state object;
+- categorical local thresholds can change how whole-compartment weight budgets evolve;
+- the current set-point knee does **not** need the specific two-timescale plasticity state;
 - if a response guides the next perturbation, the push has become a probe.
 
 ## Biology fence
@@ -177,17 +220,16 @@ Three distinct biological ideas motivate different parts of this repo:
 - Onasch et al. (2026), *Assembly-based computations through contextual dendritic gating of plasticity*, DOI `10.1016/j.neuron.2026.07.028` — dendritic depolarization with distinct 15 ms and 45 ms filters controls plasticity; dendrite-specific heterosynaptic normalization couples synapses sharing a branch; the authors explicitly report that randomized context→inhibition→dendrite mapping loses cross-context protection.
 - Vollan et al. (2025), *Left–right-alternating theta sweeps in entorhinal–hippocampal maps of space*, DOI `10.1038/s41586-024-08527-1` — small internal-direction signals are associated with trajectories through an already resident spatial representation, motivating the separate “control vector moves resident state” thread.
 
-These papers do **not** establish the synthetic operator-probing or v2 coordination claims. See [`docs/RELATED_WORK.md`](docs/RELATED_WORK.md).
+These papers do **not** establish the synthetic operator-probing, coordination, set-point, or single-trace results. See [`docs/RELATED_WORK.md`](docs/RELATED_WORK.md).
 
 ## Next attacks
 
 The next useful gates are destructive rather than decorative:
 
-1. **State back-action.** Join v1 to actual resident dynamics so probe 1 changes the state encountered by probe 2.
-2. **Trace attacker.** Replace the two-timescale trace with a single leaky scalar and quantify what, if anything, the fast/slow pair buys beyond the coordination effect.
-3. **Soft routing noise.** Replace hard context-map corruption with continuous inhibitory offsets and ask whether alignment fails gradually rather than categorically.
-4. **Hidden state versus hidden operator.** Make `same A / different x` and `different A / same visible x` compete under the same one-bit probe budget.
-5. **Grow the operator.** Replace hand-coded structure with operators produced by local temporal statistics, reconnecting to `GrowingAnttisNeuron`.
+1. **Contrast-earns-state.** Construct matched histories with equal current plasticity level but opposite `fast - slow` sign, require different updates, and test whether the second state finally earns its cost.
+2. **State back-action.** Join v1 to actual resident dynamics so probe 1 changes the state encountered by probe 2.
+3. **Hidden state versus hidden operator.** Make `same A / different x` and `different A / same visible x` compete under the same one-bit probe budget.
+4. **Grow the operator.** Replace hand-coded structure with operators produced by local temporal statistics, reconnecting to `GrowingAnttisNeuron`.
 
 ## Run
 
@@ -197,18 +239,22 @@ pytest -q
 python -m experiments.run_v0 --out /tmp/v0.json
 python -m experiments.run_v1 --out /tmp/v1.json
 python -m experiments.run_v2 --out /tmp/v2.json
+python -m experiments.run_v3 --out /tmp/v3.json
+python -m experiments.run_v4 --out /tmp/v4.json
 ```
 
 ## Repository map
 
 - `src/another_odd_thing/core.py` — resident dynamics and v0 causal witness.
 - `src/another_odd_thing/identify.py` — one-bit likelihood model, Bayesian update, information gain, paired policies.
-- `src/another_odd_thing/trace.py` — compartment-shared two-timescale analog state and threshold sign readout.
+- `src/another_odd_thing/trace.py` — two-timescale compartment trace, matched single-state attacker, and threshold sign readout.
 - `src/another_odd_thing/alignment.py` — v2 local-learning world, mirrored attacker, independently routed attacker, and heterosynaptic normalization.
+- `src/another_odd_thing/soft_setpoint.py` — continuous inhibitory displacement, quantized/continuous readouts, and swappable plasticity-trace dynamics.
 - `src/another_odd_thing/stats.py` — deterministic paired bootstrap interval.
-- `experiments/run_v0.py`, `run_v1.py`, `run_v2.py` — deterministic scientific receipts.
-- `results/v0.json`, `results/v1.json`, `results/v2.json` — frozen canonical outputs.
+- `experiments/run_v0.py` through `run_v4.py` — deterministic scientific receipts.
+- `results/v0.json` through `results/v4.json` — frozen canonical outputs.
 - `tests/` — mechanism, destructive controls, policy behavior, and receipt regressions.
-- `index.html` — dependency-free browser microscope.
+- `index.html`, `v3.html` — dependency-free browser microscopes.
 - `docs/RELATED_WORK.md` — prior-art and biology fence.
+- `docs/V3_SOFT_SETPOINT.md`, `docs/V4_SINGLE_TRACE.md` — destructive follow-up notes.
 - `docs/superpowers/` — frozen design and implementation plan.
