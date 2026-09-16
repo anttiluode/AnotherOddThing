@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 
 from .alignment import AlignmentConfig, alignment_metrics, heterosynaptic_normalize
-from .trace import CompartmentTrace, plasticity_sign
+from .trace import CompartmentTrace, TraceConfig, plasticity_sign
 
 
 def soft_inhibition(
@@ -36,6 +36,33 @@ def soft_inhibition(
     return inhibition
 
 
+def continuous_plasticity_update(
+    level: np.ndarray | float,
+    *,
+    config: TraceConfig,
+) -> np.ndarray:
+    """Continuous-magnitude attacker for the quantized 0/LTD/LTP readout.
+
+    It uses the same anchor points as the three-regime rule but interpolates
+    update magnitude continuously: 0 at zero trace, -1 at theta_d, 0 halfway
+    between theta_d and theta_p, +1 at theta_p, and saturation above theta_p.
+    The purpose is not biological realism; it asks whether categorical update
+    quantization itself sharpens the set-point transition.
+    """
+
+    values = np.asarray(level, dtype=float)
+    td = config.theta_d
+    tp = config.theta_p
+
+    below = -values / td
+    between = -1.0 + 2.0 * (values - td) / (tp - td)
+    return np.where(
+        values <= td,
+        below,
+        np.where(values < tp, between, 1.0),
+    )
+
+
 def _choose_wrong_compartments(*, seed: int, n_compartments: int) -> np.ndarray:
     rng = np.random.default_rng(seed)
     wrong = np.empty(n_compartments, dtype=int)
@@ -53,6 +80,7 @@ def train_soft_misalignment(
     *,
     seed: int,
     mismatch: float,
+    plasticity_rule: str = "quantized",
     config: AlignmentConfig | None = None,
 ) -> dict[str, object]:
     """Train with correct expression but continuously displaced plasticity relief."""
@@ -60,6 +88,8 @@ def train_soft_misalignment(
     cfg = config or AlignmentConfig()
     if not 0.0 <= mismatch <= 1.0:
         raise ValueError("mismatch must be between 0 and 1")
+    if plasticity_rule not in {"quantized", "continuous"}:
+        raise ValueError("plasticity_rule must be 'quantized' or 'continuous'")
 
     n = cfg.n_compartments
     rng_weights = np.random.default_rng(seed)
@@ -81,9 +111,9 @@ def train_soft_misalignment(
     rng_schedule.shuffle(schedule)
 
     publication_target_hits = 0
-    ltp_events = 0
-    ltd_events = 0
-    no_change_events = 0
+    positive_updates = 0
+    negative_updates = 0
+    zero_updates = 0
 
     for context in schedule:
         pathway = int(context)
@@ -111,12 +141,19 @@ def train_soft_misalignment(
         if int(np.argmax(expression_trace.level)) == pathway:
             publication_target_hits += 1
 
-        signs = plasticity_sign(plasticity_trace.level, config=cfg.trace)
-        ltp_events += int(np.sum(signs > 0))
-        ltd_events += int(np.sum(signs < 0))
-        no_change_events += int(np.sum(signs == 0))
+        if plasticity_rule == "quantized":
+            updates = plasticity_sign(plasticity_trace.level, config=cfg.trace).astype(float)
+        else:
+            updates = continuous_plasticity_update(
+                plasticity_trace.level,
+                config=cfg.trace,
+            )
 
-        weights[pathway] += cfg.learning_rate * signs
+        positive_updates += int(np.sum(updates > 0.0))
+        negative_updates += int(np.sum(updates < 0.0))
+        zero_updates += int(np.sum(np.isclose(updates, 0.0, atol=1e-12)))
+
+        weights[pathway] += cfg.learning_rate * updates
         weights = np.maximum(weights, cfg.min_weight)
         weights = heterosynaptic_normalize(
             weights,
@@ -136,13 +173,14 @@ def train_soft_misalignment(
     return {
         "seed": int(seed),
         "mismatch": float(mismatch),
+        "plasticity_rule": plasticity_rule,
         "alignment_accuracy": metrics["alignment_accuracy"],
         "diagonal_weight_share": metrics["diagonal_weight_share"],
         "publication_target_fraction": float(publication_target_hits / len(schedule)),
         "weight_budget_max_abs_error": budget_error,
-        "ltp_events": int(ltp_events),
-        "ltd_events": int(ltd_events),
-        "no_change_events": int(no_change_events),
+        "positive_update_events": int(positive_updates),
+        "negative_update_events": int(negative_updates),
+        "zero_update_events": int(zero_updates),
         "wrong_compartments": wrong,
         "weights": weights,
     }
