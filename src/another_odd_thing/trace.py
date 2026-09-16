@@ -77,6 +77,78 @@ class CompartmentTrace:
         self.slow += ass * (self.fast - self.slow)
 
 
+@dataclass
+class SingleCompartmentTrace:
+    """Matched one-timescale attacker for the two-state compartment trace.
+
+    The scalar state is calibrated separately by ``matched_single_tau_s`` so
+    that a canonical active burst reaches the same plasticity decision level as
+    ``CompartmentTrace``. Its subsequent history is intentionally different.
+    """
+
+    state: np.ndarray
+    tau_s: float
+    config: TraceConfig
+
+    def __post_init__(self) -> None:
+        self.state = np.asarray(self.state, dtype=float).copy()
+        if self.state.ndim != 1:
+            raise ValueError("state must be a 1D array")
+        if self.tau_s <= 0.0:
+            raise ValueError("tau_s must be positive")
+        if self.config.dt_s > self.tau_s:
+            raise ValueError("dt_s must not exceed tau_s")
+
+    @classmethod
+    def zeros(
+        cls,
+        compartments: int,
+        *,
+        tau_s: float,
+        config: TraceConfig | None = None,
+    ) -> "SingleCompartmentTrace":
+        if compartments <= 0:
+            raise ValueError("compartments must be positive")
+        cfg = config or TraceConfig()
+        return cls(np.zeros(compartments), float(tau_s), cfg)
+
+    @property
+    def level(self) -> np.ndarray:
+        return self.state.copy()
+
+    def step(self, drive: np.ndarray) -> None:
+        drive = np.asarray(drive, dtype=float)
+        if drive.shape != self.state.shape:
+            raise ValueError("drive shape must match compartment count")
+        alpha = self.config.dt_s / self.tau_s
+        self.state += alpha * (drive - self.state)
+
+
+def matched_single_tau_s(*, config: TraceConfig, active_steps: int) -> float:
+    """Match a scalar leaky trace to the two-timescale level after one burst.
+
+    Starting both traces from rest and driving them with unit input for
+    ``active_steps``, solve the scalar time constant analytically so its final
+    level equals the cascaded trace's slow level. This controls the decision
+    coordinate at the plasticity readout while leaving temporal history free to
+    differ.
+    """
+
+    if active_steps <= 0:
+        raise ValueError("active_steps must be positive")
+
+    reference = CompartmentTrace.zeros(1, config=config)
+    unit_drive = np.ones(1, dtype=float)
+    for _ in range(active_steps):
+        reference.step(unit_drive)
+    target = float(reference.level[0])
+    if not 0.0 < target < 1.0:
+        raise ValueError("matched target must lie strictly between zero and one")
+
+    alpha = 1.0 - (1.0 - target) ** (1.0 / active_steps)
+    return float(config.dt_s / alpha)
+
+
 def plasticity_sign(level: np.ndarray | float, *, config: TraceConfig) -> np.ndarray:
     """Return the calcium-style 0 / LTD / LTP sign readout.
 
