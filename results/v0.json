@@ -1,0 +1,52 @@
+{
+  "claim": "Passive equality does not imply equal resident operators; an addressed hidden-state perturbation can expose the difference.",
+  "classification": "PASS",
+  "gate": "v0_passive_equivalence_interventional_separation",
+  "hidden_probe_abs_difference": 0.6500000000000001,
+  "hidden_probe_event_bits": [
+    0,
+    1
+  ],
+  "hidden_probe_responses": [
+    0.4437053124999999,
+    1.0937053125
+  ],
+  "operators": {
+    "O0_uncoupled": [
+      [
+        0.85,
+        0.0
+      ],
+      [
+        0.0,
+        0.55
+      ]
+    ],
+    "O1_hidden_coupling": [
+      [
+        0.85,
+        0.65
+      ],
+      [
+        0.0,
+        0.55
+      ]
+    ]
+  },
+  "passive_max_abs_difference": 0.0,
+  "passive_steps": 4,
+  "passive_trace": [
+    1.0,
+    0.85,
+    0.7224999999999999,
+    0.6141249999999999,
+    0.5220062499999999
+  ],
+  "probe_amplitude": 1.0,
+  "publication_threshold": 0.75,
+  "visible_probe_abs_difference": 0.0,
+  "visible_probe_responses": [
+    1.2937053125,
+    1.2937053125
+  ]
+}
