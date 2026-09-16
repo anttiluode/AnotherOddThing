@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AnotherOddThing v3 — continuous set-point attack</title>
+  <style>
+    :root{color-scheme:dark;--bg:#08101d;--panel:#111a2e;--ink:#edf4ff;--muted:#9fb0cb;--line:#2a3b61;--cold:#70d6ff;--hot:#ffca5c;--good:#78e6a3}
+    *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 18% 0%,#182b54 0,#08101d 45rem);color:var(--ink);font:15px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+    main{width:min(1050px,94vw);margin:auto;padding:48px 0 72px} h1{font-size:clamp(2.2rem,7vw,5.5rem);line-height:.92;letter-spacing:-.06em;margin:.1em 0 .25em} h2{margin-top:0}.lede,.muted{color:var(--muted)}
+    .pill{display:inline-block;padding:4px 9px;border:1px solid var(--line);border-radius:999px;color:var(--muted)} .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin:24px 0}.card{padding:20px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#131e36,#0c1528);box-shadow:0 20px 50px #0007}.wide{grid-column:1/-1}
+    label{display:grid;grid-template-columns:1fr auto;gap:12px;color:var(--muted);margin:8px 0} input[type=range]{width:100%}.bar{height:18px;background:#08101d;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:5px 0 12px}.bar span{display:block;height:100%}.quant{background:var(--hot)}.cont{background:var(--cold)}
+    table{width:100%;border-collapse:collapse}td,th{padding:7px;border-bottom:1px solid #243654;text-align:right}td:first-child,th:first-child{text-align:left}.big{font-size:1.8rem;font-weight:800}.hot{color:var(--hot)}.cold{color:var(--cold)}.good{color:var(--good)}code{color:#dce8ff}.equation{background:#091429c9;border-left:3px solid var(--cold);padding:16px 18px;margin:18px 0;overflow:auto}footer{color:var(--muted);margin-top:32px}
+  </style>
+</head>
+<body>
+<main>
+  <span class="pill">AnotherOddThing / v3</span>
+  <h1>Slide the inhibition. Watch the learning regime move.</h1>
+  <p class="lede">v3 removes the binary routing attack. Plasticity relief moves continuously from the expression-aligned compartment to a wrong one. The stricter attacker keeps the same zero-update floor below θd and only smooths update magnitude between θd and θp.</p>
+  <div class="equation">continuous inhibitory displacement q → local trace → { quantized 0/LTD/LTP OR continuous LTD↔LTP magnitude } → branch-normalized weights</div>
+
+  <section class="grid">
+    <article class="card wide">
+      <h2>Frozen 128-seed microscope</h2>
+      <label>plasticity set-point displacement <strong id="qText">q = 0.50</strong></label>
+      <input id="q" type="range" min="0" max="10" step="1" value="5" />
+      <div class="grid">
+        <div>
+          <h2>Alignment accuracy</h2>
+          <div>quantized <strong id="qa" class="hot"></strong></div><div class="bar"><span id="qaBar" class="quant"></span></div>
+          <div>continuous magnitude <strong id="ca" class="cold"></strong></div><div class="bar"><span id="caBar" class="cont"></span></div>
+        </div>
+        <div>
+          <h2>Diagonal weight share</h2>
+          <div>quantized <strong id="qw" class="hot"></strong></div><div class="bar"><span id="qwBar" class="quant"></span></div>
+          <div>continuous magnitude <strong id="cw" class="cold"></strong></div><div class="bar"><span id="cwBar" class="cont"></span></div>
+        </div>
+      </div>
+      <p id="readout" class="big"></p>
+      <p class="muted">The weight-share panel matters because it is continuous: the separation is present before the winner-take-all argmax score can manufacture a cliff.</p>
+    </article>
+
+    <article class="card">
+      <h2>What q means</h2>
+      <div class="equation">Icorrect = Iclosed − (1−q)·relief<br/>Iwrong = Iclosed − q·relief</div>
+      <p><strong>q=0:</strong> plasticity relief is aligned with expression.</p>
+      <p><strong>q=0.5:</strong> correct and wrong compartments receive equal intermediate inhibition.</p>
+      <p><strong>q=1:</strong> relief has moved fully to the wrong compartment.</p>
+    </article>
+
+    <article class="card">
+      <h2>Midpoint receipt</h2>
+      <p>At <code>q=0.5</code>, continuous-minus-quantized alignment is <strong class="good">+0.437500</strong>.</p>
+      <p>Paired-bootstrap 95% interval: <strong>[+0.386719,+0.488281]</strong>.</p>
+      <p>Weight-share delta: <strong class="good">+0.14281462</strong>, 95% interval <strong>[+0.13406188,+0.15120240]</strong>.</p>
+    </article>
+
+    <article class="card wide">
+      <h2>Full frozen sweep</h2>
+      <table id="sweep"><thead><tr><th>q</th><th>quantized accuracy</th><th>continuous accuracy</th><th>quantized share</th><th>continuous share</th></tr></thead><tbody></tbody></table>
+    </article>
+
+    <article class="card wide">
+      <h2>Claim fence</h2>
+      <p class="good"><strong>The stricter continuous attacker does not erase the difference.</strong></p>
+      <p>In this fixed toy world, categorical local plasticity makes the learned structure lose alignment earlier and more sharply under the same continuously moved inhibitory set-point.</p>
+      <p class="muted">The control gets no extra subthreshold LTD: both rules are exactly zero below θd. This is still not evidence for a biological critical point, not a claim that real calcium follows this toy rule, and not a universal argument for quantized plasticity.</p>
+    </article>
+  </section>
+  <footer>Machine-readable source of truth: <code>results/v3.json</code>. Reproduce with <code>python -m experiments.run_v3 --out /tmp/v3.json</code>.</footer>
+</main>
+<script>
+const qGrid=[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0];
+const quantAcc=[1,1,1,0.947265625,0.6484375,0.228515625,0.064453125,0.013671875,0.001953125,0,0];
+const contAcc=[1,1,1,1,0.98046875,0.666015625,0.39453125,0.22265625,0.169921875,0.046875,0.001953125];
+const quantShare=[0.5487953912494336,0.5562280453394253,0.5525881655209783,0.5076146096622012,0.374224319555016,0.2560436000033578,0.1754539489041468,0.14037324228964163,0.13453065568760106,0.141450124761144,0.15113909029311728];
+const contShare=[0.4563679808517198,0.4636469267551354,0.47107192464143977,0.4717978809256287,0.4401731566008362,0.3988582194293569,0.32678514073947806,0.24478373649946833,0.21332727364260218,0.190784262031192,0.18419943690819385];
+function pct(v){return (100*v).toFixed(1)+'%'}
+function render(){const i=Number(document.querySelector('#q').value);qText.textContent='q = '+qGrid[i].toFixed(2);qa.textContent=quantAcc[i].toFixed(3);ca.textContent=contAcc[i].toFixed(3);qw.textContent=quantShare[i].toFixed(3);cw.textContent=contShare[i].toFixed(3);qaBar.style.width=pct(quantAcc[i]);caBar.style.width=pct(contAcc[i]);qwBar.style.width=pct(quantShare[i]);cwBar.style.width=pct(contShare[i]);const d=contAcc[i]-quantAcc[i];readout.textContent=d>0.001?`continuous control retains +${d.toFixed(3)} alignment`:'rules are effectively tied here';readout.className='big '+(d>0.001?'good':'muted')}
+const tbody=document.querySelector('#sweep tbody');qGrid.forEach((q,i)=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${q.toFixed(1)}</td><td>${quantAcc[i].toFixed(3)}</td><td>${contAcc[i].toFixed(3)}</td><td>${quantShare[i].toFixed(3)}</td><td>${contShare[i].toFixed(3)}</td>`;tbody.appendChild(tr)});document.querySelector('#q').addEventListener('input',render);render();
+</script>
+</body>
+</html>

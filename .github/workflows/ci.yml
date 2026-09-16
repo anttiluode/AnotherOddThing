@@ -26,15 +26,19 @@ jobs:
           python -m experiments.run_v0 --out /tmp/v0.json
           python -m experiments.run_v1 --out /tmp/v1.json
           python -m experiments.run_v2 --out /tmp/v2.json
+          python -m experiments.run_v3 --out /tmp/v3.json
           cmp /tmp/v0.json results/v0.json
           cmp /tmp/v1.json results/v1.json
           cmp /tmp/v2.json results/v2.json
+          cmp /tmp/v3.json results/v3.json
       - name: Check browser lab JavaScript syntax
         run: |
           python - <<'PY'
           from pathlib import Path
-          text = Path("index.html").read_text()
-          script = text.split("<script>", 1)[1].split("</script>", 1)[0]
-          Path("/tmp/another-odd-thing.js").write_text(script)
+          for html in ("index.html", "v3.html"):
+              text = Path(html).read_text()
+              script = text.split("<script>", 1)[1].split("</script>", 1)[0]
+              Path(f"/tmp/{Path(html).stem}.js").write_text(script)
           PY
-          node --check /tmp/another-odd-thing.js
+          node --check /tmp/index.js
+          node --check /tmp/v3.js
