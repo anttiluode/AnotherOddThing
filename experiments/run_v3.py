@@ -174,8 +174,8 @@ def build_receipt(
         "seeds": int(seeds),
         "setpoint_mismatches": [float(x) for x in SETPOINT_MISMATCHES],
         "continuous_control": {
-            "description": "Continuous update magnitudes use the same theta_d/theta_p anchors as the quantized rule: update(0)=0, update(theta_d)=-1, update((theta_d+theta_p)/2)=0, update(theta_p)=+1, then saturate at +1.",
-            "purpose": "Attack the possibility that the apparent knee is created only by winner-take-all measurement or recurrent normalization rather than by categorical plasticity readout.",
+            "description": "The continuous control preserves the exact no-update region below theta_d. At theta_d it is -1, it interpolates linearly through 0 at (theta_d+theta_p)/2 to +1 at theta_p, and then saturates at +1.",
+            "purpose": "Attack the possibility that the apparent knee is created only by winner-take-all measurement or recurrent normalization, without granting the control an extra subthreshold LTD mechanism.",
         },
         "sweep": sweep,
         "midpoint_mismatch": 0.5,
@@ -206,7 +206,7 @@ def build_receipt(
             "weight_share_seed": WEIGHT_SHARE_BOOTSTRAP_SEED,
             "resamples": int(bootstrap_resamples),
         },
-        "claim": "In this fixed toy world, continuously moving inhibitory relief away from the expression-aligned compartment produces a robust region followed by failure under the quantized three-regime plasticity readout. Replacing that categorical readout with a continuous-magnitude rule using the same anchor points preserves substantially more alignment at the middle of the sweep, including in continuous weight-share measurements.",
+        "claim": "In this fixed toy world, continuously moving inhibitory relief away from the expression-aligned compartment produces a robust region followed by failure under the quantized three-regime plasticity readout. A continuous-magnitude control with the same subthreshold no-update floor and threshold anchors preserves substantially more alignment at the middle of the sweep, including in continuous weight-share measurements.",
         "boundary": "This isolates a contribution of categorical local plasticity in this construction; it does not establish a biological calcium mechanism, universal criticality, or that the chosen thresholds are optimal. The continuous control is an attacker, not a biological alternative model.",
     }
 
