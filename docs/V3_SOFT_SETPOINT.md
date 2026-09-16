@@ -25,17 +25,17 @@ theta_d <= level < theta_p  -> -1
 level >= theta_p            -> +1
 ```
 
-A matched continuous-magnitude attacker uses the same anchor points but interpolates between them:
+The stricter continuous-magnitude attacker now preserves the **same exact no-update floor** below `theta_d`, so it does not gain an extra weak-activity LTD mechanism. It differs only inside the active plasticity range:
 
 ```text
-update(0)                    =  0
-update(theta_d)              = -1
-update((theta_d+theta_p)/2)  =  0
-update(theta_p)              = +1
-update(level > theta_p)      = +1
+level < theta_d             ->  0
+update(theta_d)             -> -1
+update((theta_d+theta_p)/2) ->  0
+update(theta_p)             -> +1
+level > theta_p             -> +1
 ```
 
-This is intentionally **not** presented as a biological alternative rule. Its job is to attack a simpler explanation: perhaps the apparent set-point knee is produced only by argmax scoring, heterosynaptic normalization, or recurrent weight feedback, and the categorical local readout contributes nothing.
+Between `theta_d` and `theta_p`, magnitude is linearly interpolated. This is intentionally **not** presented as a biological alternative rule. Its job is to attack a simpler explanation: perhaps the apparent set-point knee is produced only by argmax scoring, heterosynaptic normalization, recurrent weight feedback, or an unfair subthreshold depression advantage, and the categorical local readout contributes nothing.
 
 ## Frozen 128-seed sweep
 
@@ -47,38 +47,38 @@ Alignment accuracy:
 | 0.1 | 1.000000 | 1.000000 |
 | 0.2 | 1.000000 | 1.000000 |
 | 0.3 | 0.947266 | 1.000000 |
-| 0.4 | 0.648438 | 0.910156 |
-| 0.5 | 0.228516 | 0.673828 |
-| 0.6 | 0.064453 | 0.478516 |
-| 0.7 | 0.013672 | 0.283203 |
-| 0.8 | 0.001953 | 0.203125 |
-| 0.9 | 0.000000 | 0.132812 |
-| 1.0 | 0.000000 | 0.041016 |
+| 0.4 | 0.648438 | 0.980469 |
+| 0.5 | 0.228516 | 0.666016 |
+| 0.6 | 0.064453 | 0.394531 |
+| 0.7 | 0.013672 | 0.222656 |
+| 0.8 | 0.001953 | 0.169922 |
+| 0.9 | 0.000000 | 0.046875 |
+| 1.0 | 0.000000 | 0.001953 |
 
 The same separation is visible before the winner-take-all alignment score in the continuous diagonal-weight-share statistic:
 
 | q | quantized weight share | continuous weight share |
 |---:|---:|---:|
-| 0.0 | 0.548795 | 0.516537 |
-| 0.1 | 0.556228 | 0.525082 |
-| 0.2 | 0.552588 | 0.530534 |
-| 0.3 | 0.507615 | 0.507087 |
-| 0.4 | 0.374224 | 0.460834 |
-| 0.5 | 0.256044 | 0.425301 |
-| 0.6 | 0.175454 | 0.377194 |
-| 0.7 | 0.140373 | 0.297659 |
-| 0.8 | 0.134531 | 0.232514 |
-| 0.9 | 0.141450 | 0.195403 |
-| 1.0 | 0.151139 | 0.167749 |
+| 0.0 | 0.548795 | 0.456368 |
+| 0.1 | 0.556228 | 0.463647 |
+| 0.2 | 0.552588 | 0.471072 |
+| 0.3 | 0.507615 | 0.471798 |
+| 0.4 | 0.374224 | 0.440173 |
+| 0.5 | 0.256044 | 0.398858 |
+| 0.6 | 0.175454 | 0.326785 |
+| 0.7 | 0.140373 | 0.244784 |
+| 0.8 | 0.134531 | 0.213327 |
+| 0.9 | 0.141450 | 0.190784 |
+| 1.0 | 0.151139 | 0.184199 |
 
 At the predeclared midpoint `q=0.5`:
 
-- continuous-minus-quantized alignment delta: **+0.4453125**;
-- deterministic paired-bootstrap 95% interval: **[+0.3984375, +0.4921875]**;
-- continuous-minus-quantized diagonal-weight-share delta: **+0.16925697**;
-- deterministic paired-bootstrap 95% interval: **[+0.16056011, +0.17774522]**.
+- continuous-minus-quantized alignment delta: **+0.437500**;
+- deterministic paired-bootstrap 95% interval: **[+0.386719, +0.488281]**;
+- continuous-minus-quantized diagonal-weight-share delta: **+0.14281462**;
+- deterministic paired-bootstrap 95% interval: **[+0.13406188, +0.15120240]**.
 
-On the frozen 0.1-spaced grid, the largest adjacent drop in mean diagonal weight share occurs from `q=0.3 -> 0.4` for the quantized rule (`0.13339`) and from `q=0.6 -> 0.7` for the continuous control (`0.07953`). These are descriptive grid summaries, not estimates of a biological critical point.
+On the frozen 0.1-spaced grid, the largest adjacent drop in mean diagonal weight share occurs from `q=0.3 -> 0.4` for the quantized rule (`0.13339`) and from `q=0.6 -> 0.7` for the stricter continuous control (`0.08200`). These are descriptive grid summaries, not estimates of a biological critical point.
 
 ## Interpretation
 
@@ -86,9 +86,9 @@ The strong version of the old intuition does **not** survive:
 
 > continuous inhibition by itself does not guarantee a categorical learning transition.
 
-The narrower construction does survive the attacker:
+The narrower construction survives a more demanding attacker:
 
-> with the same continuously moved inhibitory set-point, making the local plasticity readout categorical causes the learned structure to lose alignment substantially earlier and more sharply than the continuous-magnitude control in this toy world.
+> with the same continuously moved inhibitory set-point and the same subthreshold no-update region, making the local plasticity readout categorical causes the learned structure to lose alignment substantially earlier and more sharply than a continuously varying LTD-to-LTP magnitude in this toy world.
 
 That makes the emerging computational object more precise:
 
