@@ -43,22 +43,21 @@ def continuous_plasticity_update(
 ) -> np.ndarray:
     """Continuous-magnitude attacker for the quantized 0/LTD/LTP readout.
 
-    It uses the same anchor points as the three-regime rule but interpolates
-    update magnitude continuously: 0 at zero trace, -1 at theta_d, 0 halfway
-    between theta_d and theta_p, +1 at theta_p, and saturation above theta_p.
-    The purpose is not biological realism; it asks whether categorical update
-    quantization itself sharpens the set-point transition.
+    The control preserves the quantized rule's exact no-update floor below
+    ``theta_d``. Between ``theta_d`` and ``theta_p`` it interpolates linearly
+    from -1 through 0 to +1, then saturates at +1 above ``theta_p``. Thus the
+    attacker smooths the LTD-to-LTP magnitude transition without gaining an
+    extra subthreshold depression mechanism.
     """
 
     values = np.asarray(level, dtype=float)
     td = config.theta_d
     tp = config.theta_p
 
-    below = -values / td
     between = -1.0 + 2.0 * (values - td) / (tp - td)
     return np.where(
-        values <= td,
-        below,
+        values < td,
+        0.0,
         np.where(values < tp, between, 1.0),
     )
 
