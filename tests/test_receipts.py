@@ -3,6 +3,7 @@ from experiments.run_v1 import build_receipt as build_v1_receipt
 from experiments.run_v2 import build_receipt as build_v2_receipt
 from experiments.run_v3 import build_receipt as build_v3_receipt
 from experiments.run_v4 import build_receipt as build_v4_receipt
+from experiments.run_v5 import build_receipt as build_v5_receipt
 
 
 def test_v0_receipt_contains_destructive_controls():
@@ -72,6 +73,19 @@ def test_v4_receipt_asks_whether_two_timescales_are_needed_for_the_knee():
     assert "midpoint_single_minus_two_weight_share_delta_mean" in receipt
 
 
+def test_v5_receipt_makes_temporal_direction_unavailable_to_level_only_attacker():
+    receipt = build_v5_receipt()
+    assert receipt["classification"] == "PASS_CONTRAST_EARNS_STATE"
+    metrics = receipt["metrics"]
+    assert metrics["pair_count"] == 128
+    assert metrics["max_level_pair_gap"] < 1e-12
+    assert metrics["two_state_accuracy"] == 1.0
+    assert metrics["level_only_accuracy"] == 0.5
+    assert metrics["shuffled_contrast_accuracy"] == 0.5
+    assert metrics["same_level_rule_fraction"] == 1.0
+    assert metrics["level_rule_ltd_fraction"] == 1.0
+
+
 def test_canonical_receipts_match_frozen_files():
     import json
     from pathlib import Path
@@ -82,8 +96,10 @@ def test_canonical_receipts_match_frozen_files():
     frozen_v2 = json.loads((root / "results" / "v2.json").read_text())
     frozen_v3 = json.loads((root / "results" / "v3.json").read_text())
     frozen_v4 = json.loads((root / "results" / "v4.json").read_text())
+    frozen_v5 = json.loads((root / "results" / "v5.json").read_text())
     assert build_v0_receipt() == frozen_v0
     assert build_v1_receipt() == frozen_v1
     assert build_v2_receipt() == frozen_v2
     assert build_v3_receipt() == frozen_v3
     assert build_v4_receipt() == frozen_v4
+    assert build_v5_receipt() == frozen_v5

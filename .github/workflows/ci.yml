@@ -28,11 +28,13 @@ jobs:
           python -m experiments.run_v2 --out /tmp/v2.json
           python -m experiments.run_v3 --out /tmp/v3.json
           python -m experiments.run_v4 --out /tmp/v4.json
+          python -m experiments.run_v5 --out /tmp/v5.json
           cmp /tmp/v0.json results/v0.json
           cmp /tmp/v1.json results/v1.json
           cmp /tmp/v2.json results/v2.json
           cmp /tmp/v3.json results/v3.json
           cmp /tmp/v4.json results/v4.json
+          cmp /tmp/v5.json results/v5.json
       - name: Check browser lab JavaScript syntax
         run: |
           python - <<'PY'

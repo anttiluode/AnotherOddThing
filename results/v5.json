@@ -1,0 +1,40 @@
+{
+  "attacker": "The level-only attacker sees only the exactly matched present slow level. It must emit the same prediction for both members of a pair and is therefore limited to one correct label per balanced pair. A second control swaps the two contrasts within exactly half of the matched pairs while preserving every level and contrast value.",
+  "boundary": "This is a known-answer mechanism witness. It does not show that biology reads fast-minus-slow as phase, that the sign is a learned rule, or that this trace generates theta/BTSP windows. It only establishes that a local two-state trace can carry temporal direction that an exactly matched one-state level cannot carry.",
+  "claim": "For this deliberately constructed temporal-direction task, the existing two-timescale local trace contains a second coordinate that distinguishes entering from leaving a write window when the present slow plasticity level is held fixed. The extra state therefore earns a narrow role that v4's level-only set-point task could not test.",
+  "classification": "PASS_CONTRAST_EARNS_STATE",
+  "config": {
+    "dt_s": 0.005,
+    "tau_fast_s": 0.015,
+    "tau_slow_s": 0.045,
+    "theta_d": 0.1,
+    "theta_p": 0.32
+  },
+  "construction": "Rising histories end during a local burst; falling histories end after the burst. Each history is independently amplitude-rescaled so the slow decision level is exactly matched within each pair. All target levels lie between theta_d and theta_p, so the old level-only categorical rule assigns LTD to both members. Only fast-minus-slow retains rise/fall direction.",
+  "gate": "v5_contrast_earns_state",
+  "gate_rule": {
+    "maximum_level_only_accuracy": 0.55,
+    "maximum_level_pair_gap": 1e-12,
+    "maximum_shuffled_contrast_accuracy": 0.55,
+    "minimum_abs_contrast": 0.01,
+    "minimum_pair_count": 32,
+    "minimum_two_state_accuracy": 0.95,
+    "require_level_rule_ltd_fraction": 1.0,
+    "require_same_level_rule_fraction": 1.0
+  },
+  "lineage": "v4 found one matched scalar sufficient for the level-only set-point knee and explicitly left temporal contrast unemployed. TATWATASW then made temporal direction inside a write window computationally relevant. v5 supplies that missing task without importing TATWATASW's imposed global phase variable.",
+  "metrics": {
+    "level_only_accuracy": 0.5,
+    "level_rule_ltd_fraction": 1.0,
+    "max_level_pair_gap": 1.6653345369377348e-16,
+    "mean_falling_contrast": -0.11378747900138059,
+    "mean_rising_contrast": 0.2983260900864909,
+    "min_abs_contrast": 0.06335622208559033,
+    "pair_count": 128,
+    "same_level_rule_fraction": 1.0,
+    "shuffled_contrast_accuracy": 0.5,
+    "target_level_max": 0.30000000000000004,
+    "target_level_min": 0.14,
+    "two_state_accuracy": 1.0
+  }
+}
