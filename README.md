@@ -187,6 +187,49 @@ At `q=0.5`, matched-single minus two-timescale alignment is **+0.087891**, 95% p
 
 See [`results/v4.json`](results/v4.json) and [`docs/V4_SINGLE_TRACE.md`](docs/V4_SINGLE_TRACE.md).
 
+## v5 — contrast finally earns the second state
+
+v4 left one explicit debt: the two-state trace had a `fast - slow` contrast, but the task never asked for temporal direction. [`TATWATASW`](https://github.com/anttiluode/TATWATASW) then supplied exactly that missing computational question: if learning happens inside temporal write windows, a local learner may need to know not only **how much** recent drive is present, but whether it is on the entering or leaving side of the window.
+
+v5 makes that test destructive rather than decorative.
+
+For each matched pair:
+
+```text
+rising history:   burst is still active at readout
+falling history:  burst ended before readout
+
+then independently rescale both histories
+until their present slow level is identical
+```
+
+Eight target levels from `0.14` to `0.30` are crossed with four rising histories and four falling histories, giving **128 matched pairs**. Every target lies between the existing `theta_d=0.10` and `theta_p=0.32`, so the old level-only rule calls **both histories LTD**.
+
+### Frozen v5 result
+
+| measurement | result |
+|---|---:|
+| matched history pairs | **128** |
+| maximum slow-level pair mismatch | **1.67e-16** |
+| two-state `sign(fast-slow)` direction accuracy | **1.000** |
+| level-only attacker | **0.500** |
+| shuffled-contrast control | **0.500** |
+| minimum absolute contrast over all histories | **0.06336** |
+| mean rising contrast | **+0.29833** |
+| mean falling contrast | **−0.11379** |
+| pairs receiving the same old level-rule decision | **100%** |
+| pairs receiving LTD on both sides | **100%** |
+
+**Classification: `PASS_CONTRAST_EARNS_STATE`.** On this deliberately constructed temporal-direction task, the second trace coordinate finally earns a narrow job: two local histories can have the same current plasticity level and therefore be indistinguishable to the one-state level rule, while `fast-slow` still tells whether local activity is rising or decaying.
+
+This is a known-answer mechanism witness, not a discovery that biology literally reads `fast-slow` as phase. The histories are engineered and amplitude-matched; no theta rhythm, phase precession, BTSP plateau, or learned directional readout emerges here. The useful correction is smaller:
+
+> **a local material trace can contain a temporal-direction coordinate without being given an explicit global phase variable.**
+
+That makes v5 a bridge, not a merger, with TATWATASW. TATWATASW showed why temporal direction can matter for writing order; v5 shows that the pre-existing local trace in this repo already contains enough state to represent one very small piece of that direction.
+
+See [`results/v5.json`](results/v5.json).
+
 ## What this changes in the old neuron story
 
 The useful abstraction is no longer just “resident operator + addressed event.” There may be a local transducer/state between the connection and the branch:
@@ -209,7 +252,8 @@ The destructive controls narrow the story further:
 - local state can change what the event means;
 - expression and plasticity need aligned local coordinates, but do not need to share the same Python state object;
 - categorical local thresholds can change how whole-compartment weight budgets evolve;
-- the current set-point knee does **not** need the specific two-timescale plasticity state;
+- the set-point knee does **not** need the specific two-timescale plasticity state;
+- the second trace state **does** earn a role when the task asks temporal direction at fixed present level;
 - if a response guides the next perturbation, the push has become a probe.
 
 ## Biology fence
@@ -220,13 +264,13 @@ Three distinct biological ideas motivate different parts of this repo:
 - Onasch et al. (2026), *Assembly-based computations through contextual dendritic gating of plasticity*, DOI `10.1016/j.neuron.2026.07.028` — dendritic depolarization with distinct 15 ms and 45 ms filters controls plasticity; dendrite-specific heterosynaptic normalization couples synapses sharing a branch; the authors explicitly report that randomized context→inhibition→dendrite mapping loses cross-context protection.
 - Vollan et al. (2025), *Left–right-alternating theta sweeps in entorhinal–hippocampal maps of space*, DOI `10.1038/s41586-024-08527-1` — small internal-direction signals are associated with trajectories through an already resident spatial representation, motivating the separate “control vector moves resident state” thread.
 
-These papers do **not** establish the synthetic operator-probing, coordination, set-point, or single-trace results. See [`docs/RELATED_WORK.md`](docs/RELATED_WORK.md).
+These papers do **not** establish the synthetic operator-probing, coordination, set-point, single-trace, or temporal-direction results. TATWATASW is an internal computational lineage connection, not biological validation. See [`docs/RELATED_WORK.md`](docs/RELATED_WORK.md).
 
 ## Next attacks
 
 The next useful gates are destructive rather than decorative:
 
-1. **Contrast-earns-state.** Construct matched histories with equal current plasticity level but opposite `fast - slow` sign, require different updates, and test whether the second state finally earns its cost.
+1. **Window-to-write coupling.** Let local contrast actually gate a plasticity update in a small ordered task, then compare it against a matched level-only learner and an explicit externally supplied phase/window oracle.
 2. **State back-action.** Join v1 to actual resident dynamics so probe 1 changes the state encountered by probe 2.
 3. **Hidden state versus hidden operator.** Make `same A / different x` and `different A / same visible x` compete under the same one-bit probe budget.
 4. **Grow the operator.** Replace hand-coded structure with operators produced by local temporal statistics, reconnecting to `GrowingAnttisNeuron`.
@@ -241,18 +285,19 @@ python -m experiments.run_v1 --out /tmp/v1.json
 python -m experiments.run_v2 --out /tmp/v2.json
 python -m experiments.run_v3 --out /tmp/v3.json
 python -m experiments.run_v4 --out /tmp/v4.json
+python -m experiments.run_v5 --out /tmp/v5.json
 ```
 
 ## Repository map
 
 - `src/another_odd_thing/core.py` — resident dynamics and v0 causal witness.
 - `src/another_odd_thing/identify.py` — one-bit likelihood model, Bayesian update, information gain, paired policies.
-- `src/another_odd_thing/trace.py` — two-timescale compartment trace, matched single-state attacker, and threshold sign readout.
+- `src/another_odd_thing/trace.py` — two-timescale compartment trace, matched single-state attacker, threshold sign readout, and v5 matched temporal-direction histories.
 - `src/another_odd_thing/alignment.py` — v2 local-learning world, mirrored attacker, independently routed attacker, and heterosynaptic normalization.
 - `src/another_odd_thing/soft_setpoint.py` — continuous inhibitory displacement, quantized/continuous readouts, and swappable plasticity-trace dynamics.
 - `src/another_odd_thing/stats.py` — deterministic paired bootstrap interval.
-- `experiments/run_v0.py` through `run_v4.py` — deterministic scientific receipts.
-- `results/v0.json` through `results/v4.json` — frozen canonical outputs.
+- `experiments/run_v0.py` through `run_v5.py` — deterministic scientific receipts.
+- `results/v0.json` through `results/v5.json` — frozen canonical outputs.
 - `tests/` — mechanism, destructive controls, policy behavior, and receipt regressions.
 - `index.html`, `v3.html` — dependency-free browser microscopes.
 - `docs/RELATED_WORK.md` — prior-art and biology fence.
